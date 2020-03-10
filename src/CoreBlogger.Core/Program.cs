@@ -1,12 +1,51 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace CoreBlogger.Core
 {
-    class Program
+    public class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            if (args.Length == 0)
+            {
+                WriteHowToMakeUseOfTheToolMessage();
+                Environment.Exit(0);
+            }
+
+            var coreVariables = new CoreVariables(args);
+            var generator = new Generator(coreVariables);
+
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
+            if (coreVariables.CreateNewSite)
+            {
+                generator.CreateNewSite();
+            }
+            else if (coreVariables.NewBlogPost)
+            {
+                generator.CreateNewBlogPost();
+            }
+            else
+            {
+                generator.GenerateSite();
+            }
+
+            sw.Stop();
+            System.Console.WriteLine($"It took {sw.ElapsedMilliseconds}ms to generate the site as a whole process.");
+
+            Environment.Exit(1);
+        }
+
+        private static void WriteHowToMakeUseOfTheToolMessage()
+        {
+            Console.WriteLine("How to make use of CoreBlogger:");
+            Console.WriteLine(@"CoreBlogger [new] [createsite] -w c:\code\myblog");
+            System.Console.WriteLine(string.Empty);
+            System.Console.WriteLine("new: indicates you want to create a new blog post");
+            System.Console.WriteLine("createsite: indicates you want to create a fully new site");
+            System.Console.WriteLine("-w option: the working directory of the site");
         }
     }
 }
